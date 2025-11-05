@@ -244,7 +244,43 @@
             document.getElementById('sidebar').classList.toggle('hidden');
         }
 
-        
+        function exportHistoryPDF() {
+            const exportBtn = document.getElementById('exportBtn');
+            const exportBtnText = document.getElementById('exportBtnText');
+
+            // Show loading state
+            exportBtn.disabled = true;
+            exportBtnText.textContent = 'Generating PDF...';
+
+            // Get current filter values
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            // Build URL with filters
+            let url = '/export/history';
+            const params = new URLSearchParams();
+
+            if (statusFilter && statusFilter !== 'all') {
+                params.append('status', statusFilter);
+            }
+
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+
+            // Create a temporary link to trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Show success message briefly, then reset button
+            setTimeout(() => {
+                exportBtnText.textContent = 'Export PDF';
+                exportBtn.disabled = false;
+            }, 2000);
+        }
 
         renderTransactions();
     </script>
