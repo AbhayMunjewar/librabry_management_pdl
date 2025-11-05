@@ -112,16 +112,16 @@
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <p class="stat-label">Total Collected</p>
-                        <h3 class="stat-value green">$3,282</h3>
-                    </div>
-                    <div class="stat-card">
-                        <p class="stat-label">Pending Payments</p>
-                        <h3 class="stat-value yellow">$1,250</h3>
-                    </div>
-                    <div class="stat-card">
                         <p class="stat-label">Total Transactions</p>
-                        <h3 class="stat-value">47</h3>
+                        <h3 class="stat-value">{{ records|length }}</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Recent Activity</p>
+                        <h3 class="stat-value">{{ records|selectattr('action', 'equalto', 'return')|list|length }}</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Borrowed Books</p>
+                        <h3 class="stat-value">{{ records|selectattr('action', 'equalto', 'borrow')|list|length }}</h3>
                     </div>
                 </div>
 
