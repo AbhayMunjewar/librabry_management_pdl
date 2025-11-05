@@ -277,7 +277,7 @@ def export_reports_pdf():
         # Export info
         info_style = styles['Normal']
         export_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        story.append(Paragraph(f"Generated on: {export_date}", info_style))
+        story.append(Paragraph(f"बनाया गया: {export_date}", info_style))
         story.append(Spacer(1, 20))
 
         # Statistics Summary
