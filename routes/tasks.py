@@ -177,8 +177,8 @@ def export_history_pdf():
         # Export info
         info_style = styles['Normal']
         export_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        story.append(Paragraph(f"Generated on: {export_date}", info_style))
-        story.append(Paragraph(f"Total Records: {len(records)}", info_style))
+        story.append(Paragraph(f"बनाया गया: {export_date}", info_style))
+        story.append(Paragraph(f"कुल रिकॉर्ड: {len(records)}", info_style))
         story.append(Spacer(1, 20))
 
         # Table data
