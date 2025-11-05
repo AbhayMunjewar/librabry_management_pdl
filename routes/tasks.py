@@ -281,7 +281,7 @@ def export_reports_pdf():
         story.append(Spacer(1, 20))
 
         # Statistics Summary
-        story.append(Paragraph("Library Statistics", styles['Heading2']))
+        story.append(Paragraph("पुस्तकालय आँकड़े", styles['Heading2']))
         story.append(Spacer(1, 12))
 
         stats_data = [
