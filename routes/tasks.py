@@ -314,7 +314,7 @@ def export_reports_pdf():
 
         # Top Defaulters
         if defaulters:
-            story.append(Paragraph("Top Defaulters (Unpaid Fines)", styles['Heading2']))
+            story.append(Paragraph("शीर्ष चूककर्ता (अभुगतानी जुर्माना)", styles['Heading2']))
             story.append(Spacer(1, 12))
 
             defaulter_data = [['Member Name', 'Total Unpaid Fines']]
