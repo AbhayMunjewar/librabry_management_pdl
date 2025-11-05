@@ -339,7 +339,7 @@ def export_reports_pdf():
 
         # Recent Activity
         if recent_history:
-            story.append(Paragraph("Recent Activity", styles['Heading2']))
+            story.append(Paragraph("हाल की गतिविधि", styles['Heading2']))
             story.append(Spacer(1, 12))
 
             activity_data = [['ID', 'Member', 'Book', 'Action', 'Date']]
