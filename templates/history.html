@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History - Library Fine Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f9fafb; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: white; border-bottom: 1px solid rgba(0, 0, 0, 0.1); height: 64px; display: flex; align-items: center; padding: 0 24px; position: sticky; top: 0; z-index: 10; }
+        .header-content { display: flex; align-items: center; width: 100%; }
+        .menu-btn, .logout-btn { background: none; border: none; cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .menu-btn { margin-right: 16px; padding: 8px; }
+        .menu-btn:hover, .logout-btn:hover { background: #f3f3f5; }
+        h1 { flex: 1; font-size: 18px; font-weight: 500; }
+        .main-layout { display: flex; flex: 1; }
+        aside { width: 256px; background: white; border-right: 1px solid rgba(0, 0, 0, 0.1); padding: 16px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 6px; color: #030213; margin-bottom: 4px; cursor: pointer; transition: background 0.2s; font-size: 14px; }
+        .nav-item:hover { background: #f3f3f5; }
+        .nav-item.active { background: #ececf0; }
+        .nav-item svg { width: 18px; height: 18px; }
+        main { flex: 1; display: flex; flex-direction: column; }
+        .content { flex: 1; padding: 24px; overflow-y: auto; }
+        h2 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+        .subtitle { color: #717182; font-size: 14px; margin-bottom: 24px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+        .stat-label { font-size: 14px; color: #717182; }
+        .stat-value { font-size: 28px; font-weight: 600; margin-top: 8px; }
+        .green { color: #059669; }
+        .yellow { color: #D97706; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid rgba(0, 0, 0, 0.1); display: flex; flex-wrap: wrap; gap: 12px; }
+        .card-content { padding: 24px; }
+        .search-bar { position: relative; flex: 1; min-width: 200px; }
+        .search-bar input { width: 100%; padding: 10px 12px 10px 40px; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 6px; font-size: 14px; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #717182; }
+        .filter-group { display: flex; gap: 8px; }
+        select { padding: 10px 12px; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 6px; font-size: 14px; background: white; }
+        .btn { padding: 10px 16px; border: 1px solid rgba(0, 0, 0, 0.1); background: white; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #f3f3f5; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; font-weight: 500; font-size: 14px; color: #717182; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+        td { padding: 16px 12px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); font-size: 14px; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+        .badge-paid { background: #D1FAE5; color: #059669; }
+        .badge-pending { background: #FEF3C7; color: #D97706; }
+        .badge-refunded { background: #E0E7FF; color: #4F46E5; }
+        footer { background: white; border-top: 1px solid rgba(0, 0, 0, 0.1); padding: 16px 24px; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .footer-text { color: #717182; font-size: 14px; }
+        .footer-links { display: flex; gap: 16px; }
+        .footer-links a { color: #717182; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <h1>Library Fine Management System</h1>
+            <button class="logout-btn" onclick="window.location.href='{{ url_for('auth.logout') }}'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside id="sidebar">
+            <nav>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.dashboard') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    Dashboard
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.books_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Books Management
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.members_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                    Students/Members
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.fine_payment_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Fine Payment
+                </div>
+                <div class="nav-item active" onclick="window.location.href='{{ url_for('tasks.history_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    History
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.reports_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line></svg>
+                    Reports/Analytics
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.settings_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle></svg>
+                    Settings
+                </div>
+            </nav>
+        </aside>
+
+        <main>
+            <div class="content">
+                <h2>Fine History</h2>
+                <p class="subtitle">View all fine transactions and payment history</p>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <p class="stat-label">Total Collected</p>
+                        <h3 class="stat-value green">$3,282</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Pending Payments</p>
+                        <h3 class="stat-value yellow">$1,250</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Total Transactions</p>
+                        <h3 class="stat-value">47</h3>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="search-bar">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input type="text" id="searchInput" placeholder="Search transactions..." oninput="filterTransactions()">
+                        </div>
+                        <div class="filter-group">
+                            <select id="statusFilter" onchange="filterTransactions()">
+                                <option value="all">All Status</option>
+                                <option value="paid">Paid</option>
+                                <option value="pending">Pending</option>
+                                <option value="refunded">Refunded</option>
+                            </select>
+                            <button class="btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                Export
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Transaction ID</th>
+                                    <th>Date</th>
+                                    <th>Member</th>
+                                    <th>Book</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Payment Method</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactionsTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <div class="footer-content">
+                    <p class="footer-text">© 2025 Library Fine Management System. All rights reserved.</p>
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Help</a>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Auth handled by Flask-Login
+
+        const transactions = [
+            { id: "T001", date: "2025-10-20", member: "John Doe", memberId: "M001", book: "To Kill a Mockingbird", amount: "$15", status: "Paid", paymentMethod: "Cash" },
+            { id: "T002", date: "2025-10-19", member: "Jane Smith", memberId: "M002", book: "1984", amount: "$10", status: "Paid", paymentMethod: "Card" },
+            { id: "T003", date: "2025-10-18", member: "Mike Johnson", memberId: "M003", book: "The Great Gatsby", amount: "$20", status: "Pending", paymentMethod: "-" },
+            { id: "T004", date: "2025-10-17", member: "Sarah Williams", memberId: "M004", book: "Pride and Prejudice", amount: "$5", status: "Paid", paymentMethod: "Cash" },
+            { id: "T005", date: "2025-10-16", member: "David Brown", memberId: "M005", book: "War and Peace", amount: "$8", status: "Paid", paymentMethod: "Card" },
+            { id: "T006", date: "2025-10-15", member: "Emma Wilson", memberId: "M006", book: "The Catcher in the Rye", amount: "$12", status: "Refunded", paymentMethod: "Card" },
+            { id: "T007", date: "2025-10-14", member: "John Doe", memberId: "M001", book: "The Hobbit", amount: "$6", status: "Paid", paymentMethod: "Cash" },
+            { id: "T008", date: "2025-10-13", member: "Mike Johnson", memberId: "M003", book: "Moby Dick", amount: "$15", status: "Pending", paymentMethod: "-" },
+        ];
+
+        function renderTransactions(transactionsToRender = transactions) {
+            const tbody = document.getElementById('transactionsTableBody');
+            tbody.innerHTML = '';
+            transactionsToRender.forEach(transaction => {
+                const row = document.createElement('tr');
+                const badgeClass = transaction.status === "Paid" ? "badge-paid" : 
+                                   transaction.status === "Pending" ? "badge-pending" : "badge-refunded";
+                row.innerHTML = `
+                    <td>${transaction.id}</td>
+                    <td>${transaction.date}</td>
+                    <td>
+                        <div>
+                            <p>${transaction.member}</p>
+                            <p style="font-size: 12px; color: #717182;">${transaction.memberId}</p>
+                        </div>
+                    </td>
+                    <td>${transaction.book}</td>
+                    <td>${transaction.amount}</td>
+                    <td><span class="badge ${badgeClass}">${transaction.status}</span></td>
+                    <td>${transaction.paymentMethod}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterTransactions() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value.toLowerCase();
+            
+            const filtered = transactions.filter(transaction => {
+                const matchesSearch = 
+                    transaction.member.toLowerCase().includes(query) ||
+                    transaction.memberId.toLowerCase().includes(query) ||
+                    transaction.book.toLowerCase().includes(query) ||
+                    transaction.id.toLowerCase().includes(query);
+                
+                const matchesStatus = status === "all" || transaction.status.toLowerCase() === status;
+                
+                return matchesSearch && matchesStatus;
+            });
+            
+            renderTransactions(filtered);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('hidden');
+        }
+
+        
+
+        renderTransactions();
+    </script>
+</body>
+</html>

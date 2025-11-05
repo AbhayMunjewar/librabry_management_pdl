@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Library Fine Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f9fafb; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: white; border-bottom: 1px solid rgba(0, 0, 0, 0.1); height: 64px; display: flex; align-items: center; padding: 0 24px; position: sticky; top: 0; z-index: 10; }
+        .header-content { display: flex; align-items: center; width: 100%; }
+        .menu-btn, .logout-btn { background: none; border: none; cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .menu-btn { margin-right: 16px; padding: 8px; }
+        .menu-btn:hover, .logout-btn:hover { background: #f3f3f5; }
+        h1 { flex: 1; font-size: 18px; font-weight: 500; }
+        .main-layout { display: flex; flex: 1; }
+        aside { width: 256px; background: white; border-right: 1px solid rgba(0, 0, 0, 0.1); padding: 16px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 6px; color: #030213; margin-bottom: 4px; cursor: pointer; transition: background 0.2s; font-size: 14px; }
+        .nav-item:hover { background: #f3f3f5; }
+        .nav-item.active { background: #ececf0; }
+        .nav-item svg { width: 18px; height: 18px; }
+        main { flex: 1; display: flex; flex-direction: column; }
+        .content { flex: 1; padding: 24px; overflow-y: auto; }
+        .page-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px; }
+        h2 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+        .subtitle { color: #717182; font-size: 14px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: white; border-radius: 12px; padding: 24px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+        .stat-card-content { display: flex; justify-content: space-between; align-items: center; }
+        .stat-label { font-size: 14px; color: #717182; }
+        .stat-value { font-size: 28px; font-weight: 600; margin: 8px 0; }
+        .stat-change { font-size: 14px; display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+        .stat-change.up { color: #059669; }
+        .stat-change.down { color: #DC2626; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; }
+        .stat-icon svg { width: 24px; height: 24px; }
+        .green { background: #D1FAE5; color: #059669; }
+        .red { background: #FEE2E2; color: #DC2626; }
+        .blue { background: #DBEAFE; color: #1D4ED8; }
+        .yellow { background: #FEF3C7; color: #D97706; }
+        .cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+        .card-title { font-size: 18px; font-weight: 600; }
+        .card-content { padding: 24px; }
+        .chart-container { height: 250px; display: flex; align-items: flex-end; justify-content: space-around; gap: 8px; padding: 20px 0; }
+        .bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+        .bar { width: 100%; border-radius: 4px 4px 0 0; transition: opacity 0.2s; }
+        .bar:hover { opacity: 0.8; }
+        .bar-label { font-size: 12px; color: #717182; }
+        .defaulter-item { display: flex; items-center; justify-content: space-between; padding-bottom: 16px; margin-bottom: 16px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); }
+        .defaulter-item:last-child { border-bottom: none; margin-bottom: 0; }
+        .defaulter-rank { background: #030213; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+        .defaulter-info { flex: 1; margin: 0 16px; }
+        .defaulter-name { font-weight: 500; margin-bottom: 4px; }
+        .defaulter-books { font-size: 14px; color: #717182; }
+        .defaulter-amount { font-weight: 600; color: #DC2626; }
+        .btn { padding: 10px 16px; border: 1px solid rgba(0, 0, 0, 0.1); background: white; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #f3f3f5; }
+        footer { background: white; border-top: 1px solid rgba(0, 0, 0, 0.1); padding: 16px 24px; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .footer-text { color: #717182; font-size: 14px; }
+        .footer-links { display: flex; gap: 16px; }
+        .footer-links a { color: #717182; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <h1>Library Fine Management System</h1>
+            <button class="logout-btn" onclick="window.location.href='{{ url_for('auth.logout') }}'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside id="sidebar">
+            <nav>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.dashboard') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    Dashboard
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.books_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Books Management
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.members_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                    Students/Members
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.fine_payment_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Fine Payment
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.history_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    History
+                </div>
+                <div class="nav-item active" onclick="window.location.href='{{ url_for('tasks.reports_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line></svg>
+                    Reports/Analytics
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.settings_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle></svg>
+                    Settings
+                </div>
+            </nav>
+        </aside>
+
+        <main>
+            <div class="content">
+                <div class="page-header">
+                    <div>
+                        <h2>Reports & Analytics</h2>
+                        <p class="subtitle">View comprehensive analytics and reports</p>
+                    </div>
+                    <button class="btn">Export Report</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-card-content">
+                            <div>
+                                <p class="stat-label">Collection Rate</p>
+                                <h3 class="stat-value">87.5%</h3>
+                                <div class="stat-change up">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                        <polyline points="17 6 23 6 23 12"></polyline>
+                                    </svg>
+                                    +5.2%
+                                </div>
+                            </div>
+                            <div class="stat-icon green">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="12" y1="1" x2="12" y2="23"></line>
+                                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-content">
+                            <div>
+                                <p class="stat-label">Overdue Books</p>
+                                <h3 class="stat-value">87</h3>
+                                <div class="stat-change down">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                                        <polyline points="17 18 23 18 23 12"></polyline>
+                                    </svg>
+                                    -2.1%
+                                </div>
+                            </div>
+                            <div class="stat-icon red">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                    <line x1="12" y1="9" x2="12" y2="13"></line>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-content">
+                            <div>
+                                <p class="stat-label">Avg Fine/Member</p>
+                                <h3 class="stat-value">$12.50</h3>
+                                <div class="stat-change up">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                    </svg>
+                                    +1.8%
+                                </div>
+                            </div>
+                            <div class="stat-icon blue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-card-content">
+                            <div>
+                                <p class="stat-label">This Month</p>
+                                <h3 class="stat-value">$4,532</h3>
+                                <div class="stat-change up">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                                    </svg>
+                                    +12.3%
+                                </div>
+                            </div>
+                            <div class="stat-icon yellow">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cards-grid">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Monthly Fine Collection</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 150px; background: #10b981;"></div>
+                                    <div class="bar-label">Jan</div>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 180px; background: #10b981;"></div>
+                                    <div class="bar-label">Feb</div>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 120px; background: #10b981;"></div>
+                                    <div class="bar-label">Mar</div>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 200px; background: #10b981;"></div>
+                                    <div class="bar-label">Apr</div>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 160px; background: #10b981;"></div>
+                                    <div class="bar-label">May</div>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 190px; background: #10b981;"></div>
+                                    <div class="bar-label">Jun</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Fines by Book Category</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="chart-container">
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 120px; background: #6366f1;"></div>
+                                    <div class="bar-label">Fiction</div>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 85px; background: #6366f1;"></div>
+                                    <div class="bar-label">Non-Fic</div>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 62px; background: #6366f1;"></div>
+                                    <div class="bar-label">Ref</div>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 145px; background: #6366f1;"></div>
+                                    <div class="bar-label">Text</div>
+                                </div>
+                                <div class="bar-group">
+                                    <div class="bar" style="height: 38px; background: #6366f1;"></div>
+                                    <div class="bar-label">Journal</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Top Defaulters</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="defaulter-item">
+                                <div class="defaulter-rank">1</div>
+                                <div class="defaulter-info">
+                                    <div class="defaulter-name">John Doe</div>
+                                    <div class="defaulter-books">3 overdue books</div>
+                                </div>
+                                <div class="defaulter-amount">$45</div>
+                            </div>
+                            <div class="defaulter-item">
+                                <div class="defaulter-rank">2</div>
+                                <div class="defaulter-info">
+                                    <div class="defaulter-name">Mike Johnson</div>
+                                    <div class="defaulter-books">2 overdue books</div>
+                                </div>
+                                <div class="defaulter-amount">$38</div>
+                            </div>
+                            <div class="defaulter-item">
+                                <div class="defaulter-rank">3</div>
+                                <div class="defaulter-info">
+                                    <div class="defaulter-name">David Brown</div>
+                                    <div class="defaulter-books">2 overdue books</div>
+                                </div>
+                                <div class="defaulter-amount">$32</div>
+                            </div>
+                            <div class="defaulter-item">
+                                <div class="defaulter-rank">4</div>
+                                <div class="defaulter-info">
+                                    <div class="defaulter-name">Emily Davis</div>
+                                    <div class="defaulter-books">4 overdue books</div>
+                                </div>
+                                <div class="defaulter-amount">$28</div>
+                            </div>
+                            <div class="defaulter-item">
+                                <div class="defaulter-rank">5</div>
+                                <div class="defaulter-info">
+                                    <div class="defaulter-name">Chris Wilson</div>
+                                    <div class="defaulter-books">1 overdue book</div>
+                                </div>
+                                <div class="defaulter-amount">$25</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <div class="footer-content">
+                    <p class="footer-text">© 2025 Library Fine Management System. All rights reserved.</p>
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Help</a>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Auth handled by Flask-Login
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('hidden');
+        }
+        
+    </script>
+</body>
+</html>

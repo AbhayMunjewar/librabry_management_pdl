@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members - Library Fine Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f9fafb; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: white; border-bottom: 1px solid rgba(0, 0, 0, 0.1); height: 64px; display: flex; align-items: center; padding: 0 24px; position: sticky; top: 0; z-index: 10; }
+        .header-content { display: flex; align-items: center; width: 100%; }
+        .menu-btn, .logout-btn { background: none; border: none; cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .menu-btn { margin-right: 16px; padding: 8px; }
+        .menu-btn:hover, .logout-btn:hover { background: #f3f3f5; }
+        h1 { flex: 1; font-size: 18px; font-weight: 500; }
+        .main-layout { display: flex; flex: 1; }
+        aside { width: 256px; background: white; border-right: 1px solid rgba(0, 0, 0, 0.1); padding: 16px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 6px; color: #030213; margin-bottom: 4px; cursor: pointer; transition: background 0.2s; font-size: 14px; }
+        .nav-item:hover { background: #f3f3f5; }
+        .nav-item.active { background: #ececf0; }
+        .nav-item svg { width: 18px; height: 18px; }
+        main { flex: 1; display: flex; flex-direction: column; }
+        .content { flex: 1; padding: 24px; overflow-y: auto; }
+        .page-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px; }
+        h2 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+        .subtitle { color: #717182; font-size: 14px; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+        .card-content { padding: 24px; }
+        .search-bar { position: relative; flex: 1; }
+        .search-bar input { width: 100%; padding: 10px 12px 10px 40px; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 6px; font-size: 14px; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #717182; }
+        table { width: 100%; border-collapse: collapse; }
+        th { text-align: left; padding: 12px; font-weight: 500; font-size: 14px; color: #717182; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+        td { padding: 16px 12px; border-bottom: 1px solid rgba(0, 0, 0, 0.05); font-size: 14px; }
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; border: 1px solid rgba(0, 0, 0, 0.1); }
+        .contact-info { font-size: 13px; }
+        .contact-info div { display: flex; align-items: center; gap: 4px; margin-bottom: 4px; }
+        .contact-info svg { width: 12px; height: 12px; color: #717182; }
+        .fine-due { color: #DC2626; font-weight: 500; }
+        .btn { padding: 10px 16px; border: 1px solid rgba(0, 0, 0, 0.1); background: white; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #f3f3f5; }
+        .btn-primary { background: #030213; color: white; border-color: #030213; }
+        .btn-primary:hover { opacity: 0.9; background: #030213; }
+        .btn-icon { padding: 8px; }
+        .btn-delete { color: #DC2626; }
+        .btn-delete:hover { background: #FEE2E2; }
+        footer { background: white; border-top: 1px solid rgba(0, 0, 0, 0.1); padding: 16px 24px; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .footer-text { color: #717182; font-size: 14px; }
+        .footer-links { display: flex; gap: 16px; }
+        .footer-links a { color: #717182; text-decoration: none; font-size: 14px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 100; justify-content: center; align-items: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; border-radius: 12px; padding: 24px; width: 90%; max-width: 500px; }
+        .modal-title { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+        .modal-subtitle { color: #717182; font-size: 14px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+        input, select { width: 100%; padding: 10px 12px; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 6px; font-size: 14px; background: #f3f3f5; }
+        input:focus, select:focus { outline: none; border-color: #030213; background: white; }
+        .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <h1>Library Fine Management System</h1>
+            <button class="logout-btn" onclick="window.location.href='{{ url_for('auth.logout') }}'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside id="sidebar">
+            <nav>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.dashboard') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    Dashboard
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.books_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Books Management
+                </div>
+                <div class="nav-item active" onclick="window.location.href='{{ url_for('tasks.members_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                    Students/Members
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.fine_payment_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Fine Payment
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.history_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    History
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.reports_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line></svg>
+                    Reports/Analytics
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.settings_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle></svg>
+                    Settings
+                </div>
+            </nav>
+        </aside>
+
+        <main>
+            <div class="content">
+                <div class="page-header">
+                    <div>
+                        <h2>Students/Members Management</h2>
+                        <p class="subtitle">Manage library members and their information</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="openAddModal()">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add New Member
+                    </button>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="search-bar">
+                            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
+                            </svg>
+                            <input type="text" id="searchInput" placeholder="Search by name, email, or member ID..." oninput="filterMembers()">
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Member ID</th>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    <th>Type</th>
+                                    <th>Books Issued</th>
+                                    <th>Fines Due</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="membersTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <footer>
+                <div class="footer-content">
+                    <p class="footer-text">© 2025 Library Fine Management System. All rights reserved.</p>
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Help</a>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h3 class="modal-title">Add New Member</h3>
+            <p class="modal-subtitle">Enter the details of the new member</p>
+            <form id="addMemberForm" onsubmit="addMember(event)">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone</label>
+                    <input type="text" id="phone" required>
+                </div>
+                <div class="form-group">
+                    <label>Member Type</label>
+                    <select id="type">
+                        <option value="Student">Student</option>
+                        <option value="Faculty">Faculty</option>
+                        <option value="Staff">Staff</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Member</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Auth is handled by Flask-Login
+
+        let members = JSON.parse(localStorage.getItem('members')) || [
+            { id: "M001", name: "John Doe", email: "john@email.com", phone: "(555) 123-4567", type: "Student", booksIssued: 2, finesDue: "$15" },
+            { id: "M002", name: "Jane Smith", email: "jane@email.com", phone: "(555) 234-5678", type: "Faculty", booksIssued: 1, finesDue: "$0" },
+            { id: "M003", name: "Mike Johnson", email: "mike@email.com", phone: "(555) 345-6789", type: "Student", booksIssued: 3, finesDue: "$20" },
+            { id: "M004", name: "Sarah Williams", email: "sarah@email.com", phone: "(555) 456-7890", type: "Student", booksIssued: 0, finesDue: "$0" },
+            { id: "M005", name: "David Brown", email: "david@email.com", phone: "(555) 567-8901", type: "Faculty", booksIssued: 2, finesDue: "$5" },
+        ];
+
+        function renderMembers(membersToRender = members) {
+            const tbody = document.getElementById('membersTableBody');
+            tbody.innerHTML = '';
+            membersToRender.forEach(member => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${member.id}</td>
+                    <td>${member.name}</td>
+                    <td>
+                        <div class="contact-info">
+                            <div>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                                </svg>
+                                ${member.email}
+                            </div>
+                            <div style="color: #717182;">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                                </svg>
+                                ${member.phone}
+                            </div>
+                        </div>
+                    </td>
+                    <td><span class="badge">${member.type}</span></td>
+                    <td>${member.booksIssued}</td>
+                    <td><span class="${member.finesDue !== '$0' ? 'fine-due' : ''}">${member.finesDue}</span></td>
+                    <td>
+                        <button class="btn btn-icon" onclick="editMember('${member.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+                            </svg>
+                        </button>
+                        <button class="btn btn-icon btn-delete" onclick="deleteMember('${member.id}')">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6"></polyline>
+                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterMembers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = members.filter(member => 
+                member.name.toLowerCase().includes(query) ||
+                member.email.toLowerCase().includes(query) ||
+                member.id.toLowerCase().includes(query)
+            );
+            renderMembers(filtered);
+        }
+
+        function openAddModal() {
+            document.getElementById('addModal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('addModal').classList.remove('show');
+            document.getElementById('addMemberForm').reset();
+        }
+
+        function addMember(event) {
+            event.preventDefault();
+            const newMember = {
+                id: `M${String(members.length + 1).padStart(3, '0')}`,
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                type: document.getElementById('type').value,
+                booksIssued: 0,
+                finesDue: "$0"
+            };
+            members.push(newMember);
+            localStorage.setItem('members', JSON.stringify(members));
+            renderMembers();
+            closeModal();
+            alert('Member added successfully!');
+        }
+
+        function editMember(id) {
+            alert('Edit functionality - Member ID: ' + id);
+        }
+
+        function deleteMember(id) {
+            if (confirm('Are you sure you want to delete this member?')) {
+                members = members.filter(member => member.id !== id);
+                localStorage.setItem('members', JSON.stringify(members));
+                renderMembers();
+                alert('Member deleted successfully!');
+            }
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('hidden');
+        }
+
+        
+
+        renderMembers();
+    </script>
+</body>
+</html>

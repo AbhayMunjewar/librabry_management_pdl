@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine Payment - Library Fine Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f9fafb; min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: white; border-bottom: 1px solid rgba(0, 0, 0, 0.1); height: 64px; display: flex; align-items: center; padding: 0 24px; position: sticky; top: 0; z-index: 10; }
+        .header-content { display: flex; align-items: center; width: 100%; }
+        .menu-btn, .logout-btn { background: none; border: none; cursor: pointer; padding: 8px 12px; border-radius: 6px; font-size: 14px; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
+        .menu-btn { margin-right: 16px; padding: 8px; }
+        .menu-btn:hover, .logout-btn:hover { background: #f3f3f5; }
+        h1 { flex: 1; font-size: 18px; font-weight: 500; }
+        .main-layout { display: flex; flex: 1; }
+        aside { width: 256px; background: white; border-right: 1px solid rgba(0, 0, 0, 0.1); padding: 16px; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 6px; color: #030213; margin-bottom: 4px; cursor: pointer; transition: background 0.2s; font-size: 14px; }
+        .nav-item:hover { background: #f3f3f5; }
+        .nav-item.active { background: #ececf0; }
+        .nav-item svg { width: 18px; height: 18px; }
+        main { flex: 1; display: flex; flex-direction: column; }
+        .content { flex: 1; padding: 24px; overflow-y: auto; }
+        h2 { font-size: 24px; font-weight: 600; margin-bottom: 4px; }
+        .subtitle { color: #717182; font-size: 14px; margin-bottom: 24px; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); margin-bottom: 24px; }
+        .card-header { padding: 20px 24px; border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
+        .card-title { font-size: 18px; font-weight: 600; }
+        .card-content { padding: 24px; }
+        .search-container { display: flex; gap: 12px; }
+        .search-bar { position: relative; flex: 1; }
+        .search-bar input { width: 100%; padding: 10px 12px 10px 40px; border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 6px; font-size: 14px; }
+        .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: #717182; }
+        .btn { padding: 10px 16px; border: 1px solid rgba(0, 0, 0, 0.1); background: white; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn:hover { background: #f3f3f5; }
+        .btn-primary { background: #030213; color: white; border-color: #030213; }
+        .btn-primary:hover { opacity: 0.9; background: #030213; }
+        .detail-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 24px; }
+        .member-info p { font-size: 14px; color: #717182; margin-top: 4px; }
+        .badge { display: inline-block; padding: 6px 16px; border-radius: 6px; font-size: 18px; font-weight: 600; background: #FEE2E2; color: #DC2626; }
+        .fine-item { border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+        .fine-item-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px; }
+        .fine-item h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .fine-item p { font-size: 14px; color: #717182; }
+        .fine-amount { font-size: 20px; font-weight: 600; color: #DC2626; }
+        .divider { height: 1px; background: rgba(0, 0, 0, 0.1); margin: 24px 0; }
+        .member-card { border: 1px solid rgba(0, 0, 0, 0.1); border-radius: 8px; padding: 16px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+        .member-card:hover { background: #f9fafb; }
+        .member-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .member-card-right { text-align: right; }
+        .member-card-right p { font-size: 18px; font-weight: 600; color: #DC2626; margin-bottom: 4px; }
+        .member-card-right span { font-size: 14px; color: #717182; }
+        footer { background: white; border-top: 1px solid rgba(0, 0, 0, 0.1); padding: 16px 24px; }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+        .footer-text { color: #717182; font-size: 14px; }
+        .footer-links { display: flex; gap: 16px; }
+        .footer-links a { color: #717182; text-decoration: none; font-size: 14px; }
+        .hidden { display: none; }
+        .toast { position: fixed; top: 20px; right: 20px; background: #030213; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); z-index: 1000; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <button class="menu-btn" onclick="toggleSidebar()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <h1>Library Fine Management System</h1>
+            <button class="logout-btn" onclick="window.location.href='{{ url_for('auth.logout') }}'">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                Logout
+            </button>
+        </div>
+    </header>
+
+    <div class="main-layout">
+        <aside id="sidebar">
+            <nav>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.dashboard') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                    Dashboard
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.books_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Books Management
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.members_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+                    Students/Members
+                </div>
+                <div class="nav-item active" onclick="window.location.href='{{ url_for('tasks.fine_payment_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    Fine Payment
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.history_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                    History
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.reports_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line></svg>
+                    Reports/Analytics
+                </div>
+                <div class="nav-item" onclick="window.location.href='{{ url_for('tasks.settings_page') }}'">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle></svg>
+                    Settings
+                </div>
+            </nav>
+        </aside>
+
+        <main>
+            <div class="content">
+                <h2>Fine Payment</h2>
+                <p class="subtitle">Process fine payments for library members</p>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Search Member</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="search-container">
+                            <div class="search-bar">
+                                <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
+                                </svg>
+                                <input type="text" id="searchInput" placeholder="Enter Member ID or Name...">
+                            </div>
+                            <button class="btn btn-primary" onclick="searchMember()">Search</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="selectedMemberCard" class="card hidden">
+                    <div class="card-header">
+                        <div class="detail-header">
+                            <div class="member-info">
+                                <h3 class="card-title">Fine Details</h3>
+                                <p>Member: <span id="memberName"></span> (<span id="memberId"></span>)</p>
+                            </div>
+                            <span class="badge" id="totalBadge">Total: $0</span>
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <div id="finesList"></div>
+                        <div class="divider"></div>
+                        <button class="btn btn-primary" style="width: 100%;" onclick="payAllFines()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                            Pay All Fines
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Outstanding Fines Summary</h3>
+                    </div>
+                    <div class="card-content" id="outstandingList"></div>
+                </div>
+            </div>
+
+            <footer>
+                <div class="footer-content">
+                    <p class="footer-text">© 2025 Library Fine Management System. All rights reserved.</p>
+                    <div class="footer-links">
+                        <a href="#">Privacy Policy</a>
+                        <a href="#">Terms of Service</a>
+                        <a href="#">Help</a>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        // Auth is handled by Flask-Login
+
+        const membersWithFines = [
+            { id: "M001", name: "John Doe", totalFines: 15, fines: [
+                { book: "To Kill a Mockingbird", daysOverdue: 5, amount: 10, dueDate: "2025-10-10" },
+                { book: "The Hobbit", daysOverdue: 2, amount: 5, dueDate: "2025-10-17" }
+            ]},
+            { id: "M003", name: "Mike Johnson", totalFines: 20, fines: [
+                { book: "The Great Gatsby", daysOverdue: 8, amount: 15, dueDate: "2025-10-08" },
+                { book: "Moby Dick", daysOverdue: 3, amount: 5, dueDate: "2025-10-15" }
+            ]},
+            { id: "M005", name: "David Brown", totalFines: 5, fines: [
+                { book: "War and Peace", daysOverdue: 2, amount: 5, dueDate: "2025-10-18" }
+            ]}
+        ];
+
+        let selectedMember = null;
+
+        function renderOutstanding() {
+            const container = document.getElementById('outstandingList');
+            container.innerHTML = '';
+            membersWithFines.forEach(member => {
+                const card = document.createElement('div');
+                card.className = 'member-card';
+                card.onclick = () => selectMember(member.id);
+                card.innerHTML = `
+                    <div>
+                        <h4>${member.name}</h4>
+                        <p style="font-size: 14px; color: #717182;">${member.id}</p>
+                    </div>
+                    <div class="member-card-right">
+                        <p>$${member.totalFines}</p>
+                        <span>${member.fines.length} overdue book(s)</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function searchMember() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const found = membersWithFines.find(m => 
+                m.id.toLowerCase().includes(query) || m.name.toLowerCase().includes(query)
+            );
+            if (found) {
+                selectMember(found.id);
+            } else {
+                showToast('Member not found or has no outstanding fines');
+            }
+        }
+
+        function selectMember(id) {
+            selectedMember = membersWithFines.find(m => m.id === id);
+            if (!selectedMember) return;
+
+            document.getElementById('memberName').textContent = selectedMember.name;
+            document.getElementById('memberId').textContent = selectedMember.id;
+            document.getElementById('totalBadge').textContent = `Total: $${selectedMember.totalFines}`;
+            document.getElementById('searchInput').value = selectedMember.id;
+
+            const finesList = document.getElementById('finesList');
+            finesList.innerHTML = '';
+            selectedMember.fines.forEach((fine, index) => {
+                const fineItem = document.createElement('div');
+                fineItem.className = 'fine-item';
+                fineItem.innerHTML = `
+                    <div class="fine-item-header">
+                        <div>
+                            <h4>${fine.book}</h4>
+                            <p>Due Date: ${fine.dueDate} • ${fine.daysOverdue} days overdue</p>
+                        </div>
+                        <div class="fine-amount">$${fine.amount}</div>
+                    </div>
+                    <button class="btn" onclick="payFine(${index}, ${fine.amount})">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="1" x2="12" y2="23"></line>
+                            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                        </svg>
+                        Pay $${fine.amount}
+                    </button>
+                `;
+                finesList.appendChild(fineItem);
+            });
+
+            document.getElementById('selectedMemberCard').classList.remove('hidden');
+        }
+
+        function payFine(index, amount) {
+            showToast(`Payment of $${amount} processed successfully!`);
+            setTimeout(() => {
+                selectedMember = null;
+                document.getElementById('selectedMemberCard').classList.add('hidden');
+                document.getElementById('searchInput').value = '';
+            }, 1500);
+        }
+
+        function payAllFines() {
+            if (!selectedMember) return;
+            showToast(`Total payment of $${selectedMember.totalFines} processed successfully!`);
+            setTimeout(() => {
+                selectedMember = null;
+                document.getElementById('selectedMemberCard').classList.add('hidden');
+                document.getElementById('searchInput').value = '';
+            }, 1500);
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('hidden');
+        }
+
+        
+
+        // Enter key support for search
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') searchMember();
+        });
+
+        renderOutstanding();
+    </script>
+</body>
+</html>
