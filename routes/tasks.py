@@ -171,7 +171,7 @@ def export_history_pdf():
             alignment=TA_CENTER,
             textColor=colors.darkblue
         )
-        story.append(Paragraph("Library Management System - History Report", title_style))
+        story.append(Paragraph("संकष्ट पुस्तकालय वित्त प्रबंधन प्रणाली - इतिहास रिपोर्ट", title_style))
         story.append(Spacer(1, 20))
 
         # Export info
