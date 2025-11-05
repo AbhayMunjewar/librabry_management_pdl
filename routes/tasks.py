@@ -182,7 +182,7 @@ def export_history_pdf():
         story.append(Spacer(1, 20))
 
         # Table data
-        table_data = [['ID', 'Member Name', 'Book Title', 'Action', 'Date & Time']]
+        table_data = [['आईडी', 'सदस्य का नाम', 'पुस्तक का शीर्षक', 'कार्य', 'दिनांक और समय']]
 
         for record in records:
             table_data.append([
