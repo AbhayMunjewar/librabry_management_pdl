@@ -123,7 +123,14 @@
                         <h2>Reports & Analytics</h2>
                         <p class="subtitle">View comprehensive analytics and reports</p>
                     </div>
-                    <button class="btn">Export Report</button>
+                    <button class="btn" onclick="exportReportsPDF()" id="exportBtn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                      <polyline points="7 10 12 15 17 10"></polyline>
+                      <line x1="12" y1="15" x2="12" y2="3"></line>
+                  </svg>
+                  <span id="exportBtnText">Export PDF Report</span>
+              </button>
                 </div>
 
                 <div class="stats-grid">
@@ -131,7 +138,7 @@
                         <div class="stat-card-content">
                             <div>
                                 <p class="stat-label">Collection Rate</p>
-                                <h3 class="stat-value">87.5%</h3>
+                                <h3 class="stat-value">{{ collection_rate }}%</h3>
                                 <div class="stat-change up">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
@@ -152,8 +159,8 @@
                     <div class="stat-card">
                         <div class="stat-card-content">
                             <div>
-                                <p class="stat-label">Overdue Books</p>
-                                <h3 class="stat-value">87</h3>
+                                <p class="stat-label">Borrowed Books</p>
+                                <h3 class="stat-value">{{ borrowed_books }}</h3>
                                 <div class="stat-change down">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
@@ -174,8 +181,8 @@
                     <div class="stat-card">
                         <div class="stat-card-content">
                             <div>
-                                <p class="stat-label">Avg Fine/Member</p>
-                                <h3 class="stat-value">$12.50</h3>
+                                <p class="stat-label">Unpaid Fines</p>
+                                <h3 class="stat-value">${{ unpaid_fines }}</h3>
                                 <div class="stat-change up">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
@@ -195,8 +202,8 @@
                     <div class="stat-card">
                         <div class="stat-card-content">
                             <div>
-                                <p class="stat-label">This Month</p>
-                                <h3 class="stat-value">$4,532</h3>
+                                <p class="stat-label">Total Fines</p>
+                                <h3 class="stat-value">${{ total_fines }}</h3>
                                 <div class="stat-change up">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
@@ -284,46 +291,32 @@
                             <h3 class="card-title">Top Defaulters</h3>
                         </div>
                         <div class="card-content">
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">1</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">John Doe</div>
-                                    <div class="defaulter-books">3 overdue books</div>
+                            {% if recent_history %}
+                                {% set defaulters = {} %}
+                                {% for record in recent_history %}
+                                    {% if record.member and record.action == 'borrow' %}
+                                        {% set member_name = record.member.name %}
+                                        {% if member_name not in defaulters %}
+                                            {% set _ = defaulters.update({member_name: 1}) %}
+                                        {% else %}
+                                            {% set _ = defaulters.update({member_name: defaulters[member_name] + 1}) %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% for i, (member_name, count) in enumerate(defaulters.items()[:5]) %}
+                                <div class="defaulter-item">
+                                    <div class="defaulter-rank">{{ i + 1 }}</div>
+                                    <div class="defaulter-info">
+                                        <div class="defaulter-name">{{ member_name }}</div>
+                                        <div class="defaulter-books">{{ count }} borrowed book{{ 's' if count > 1 else '' }}</div>
+                                    </div>
+                                    <div class="defaulter-amount">${{ count * 15 }}</div>
                                 </div>
-                                <div class="defaulter-amount">$45</div>
-                            </div>
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">2</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">Mike Johnson</div>
-                                    <div class="defaulter-books">2 overdue books</div>
-                                </div>
-                                <div class="defaulter-amount">$38</div>
-                            </div>
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">3</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">David Brown</div>
-                                    <div class="defaulter-books">2 overdue books</div>
-                                </div>
-                                <div class="defaulter-amount">$32</div>
-                            </div>
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">4</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">Emily Davis</div>
-                                    <div class="defaulter-books">4 overdue books</div>
-                                </div>
-                                <div class="defaulter-amount">$28</div>
-                            </div>
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">5</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">Chris Wilson</div>
-                                    <div class="defaulter-books">1 overdue book</div>
-                                </div>
-                                <div class="defaulter-amount">$25</div>
-                            </div>
+                                {% endfor %}
+                            {% else %}
+                                <p style="text-align: center; color: #717182;">No recent activity found</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -348,7 +341,30 @@
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('hidden');
         }
-        
+
+        function exportReportsPDF() {
+            const exportBtn = document.getElementById('exportBtn');
+            const exportBtnText = document.getElementById('exportBtnText');
+
+            // Show loading state
+            exportBtn.disabled = true;
+            exportBtnText.textContent = 'Generating PDF...';
+
+            // Create a temporary link to trigger download
+            const link = document.createElement('a');
+            link.href = '/export/reports';
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Show success message briefly, then reset button
+            setTimeout(() => {
+                exportBtnText.textContent = 'Export PDF Report';
+                exportBtn.disabled = false;
+            }, 2000);
+        }
+
     </script>
 </body>
 </html>

@@ -112,16 +112,16 @@
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <p class="stat-label">Total Collected</p>
-                        <h3 class="stat-value green">$3,282</h3>
-                    </div>
-                    <div class="stat-card">
-                        <p class="stat-label">Pending Payments</p>
-                        <h3 class="stat-value yellow">$1,250</h3>
-                    </div>
-                    <div class="stat-card">
                         <p class="stat-label">Total Transactions</p>
-                        <h3 class="stat-value">47</h3>
+                        <h3 class="stat-value">{{ records|length }}</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Recent Activity</p>
+                        <h3 class="stat-value">{{ records|selectattr('action', 'equalto', 'return')|list|length }}</h3>
+                    </div>
+                    <div class="stat-card">
+                        <p class="stat-label">Borrowed Books</p>
+                        <h3 class="stat-value">{{ records|selectattr('action', 'equalto', 'borrow')|list|length }}</h3>
                     </div>
                 </div>
 
@@ -140,13 +140,13 @@
                                 <option value="pending">Pending</option>
                                 <option value="refunded">Refunded</option>
                             </select>
-                            <button class="btn">
+                            <button class="btn" onclick="exportHistoryPDF()" id="exportBtn">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                                     <polyline points="7 10 12 15 17 10"></polyline>
                                     <line x1="12" y1="15" x2="12" y2="3"></line>
                                 </svg>
-                                Export
+                                <span id="exportBtnText">Export PDF</span>
                             </button>
                         </div>
                     </div>
@@ -155,15 +155,32 @@
                             <thead>
                                 <tr>
                                     <th>Transaction ID</th>
-                                    <th>Date</th>
+                                    <th>Date & Time</th>
                                     <th>Member</th>
                                     <th>Book</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Payment Method</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="transactionsTableBody"></tbody>
+                            <tbody>
+                                {% for record in records %}
+                                <tr>
+                                    <td>{{ record.id }}</td>
+                                    <td>{{ record.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <div>
+                                            <p>{{ record.member.name if record.member else 'Unknown' }}</p>
+                                            <p style="font-size: 12px; color: #717182;">ID: {{ record.member_id }}</p>
+                                        </div>
+                                    </td>
+                                    <td>{{ record.book.title if record.book else 'Unknown' }}</td>
+                                    <td>
+                                        <span class="badge {{ 'badge-paid' if record.action == 'return' else 'badge-pending' }}">
+                                            {{ record.action.title() }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -244,7 +261,43 @@
             document.getElementById('sidebar').classList.toggle('hidden');
         }
 
-        
+        function exportHistoryPDF() {
+            const exportBtn = document.getElementById('exportBtn');
+            const exportBtnText = document.getElementById('exportBtnText');
+
+            // Show loading state
+            exportBtn.disabled = true;
+            exportBtnText.textContent = 'Generating PDF...';
+
+            // Get current filter values
+            const statusFilter = document.getElementById('statusFilter').value;
+
+            // Build URL with filters
+            let url = '/export/history';
+            const params = new URLSearchParams();
+
+            if (statusFilter && statusFilter !== 'all') {
+                params.append('status', statusFilter);
+            }
+
+            if (params.toString()) {
+                url += '?' + params.toString();
+            }
+
+            // Create a temporary link to trigger download
+            const link = document.createElement('a');
+            link.href = url;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Show success message briefly, then reset button
+            setTimeout(() => {
+                exportBtnText.textContent = 'Export PDF';
+                exportBtn.disabled = false;
+            }, 2000);
+        }
 
         renderTransactions();
     </script>
