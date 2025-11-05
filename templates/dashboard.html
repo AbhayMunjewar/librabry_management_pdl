@@ -583,28 +583,28 @@
                             <h3 class="card-title">Quick Actions</h3>
                         </div>
                         <div class="card-content">
-                            <button class="action-btn primary" onclick="navigate('fine-payment.html')">
+                            <button class="action-btn primary" onclick="window.location.href='{{ url_for('tasks.fine_payment_page') }}'">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <line x1="12" y1="1" x2="12" y2="23"></line>
                                     <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
                                 </svg>
                                 Process Fine Payment
                             </button>
-                            <button class="action-btn" onclick="navigate('books.html')">
+                            <button class="action-btn" onclick="window.location.href='{{ url_for('tasks.books_page') }}'">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
                                     <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
                                 </svg>
                                 Manage Books
                             </button>
-                            <button class="action-btn" onclick="navigate('members.html')">
+                            <button class="action-btn" onclick="window.location.href='{{ url_for('tasks.members_page') }}'">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                                     <circle cx="9" cy="7" r="4"></circle>
                                 </svg>
                                 Manage Members
                             </button>
-                            <button class="action-btn" onclick="navigate('reports.html')">
+                            <button class="action-btn" onclick="window.location.href='{{ url_for('tasks.reports_page') }}'">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                                     <line x1="12" y1="9" x2="12" y2="13"></line>
