@@ -112,15 +112,15 @@
 
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <p class="stat-label">Total Transactions</p>
+                        <p class="stat-label">कुल लेनदेन</p>
                         <h3 class="stat-value">{{ records|length }}</h3>
                     </div>
                     <div class="stat-card">
-                        <p class="stat-label">Recent Activity</p>
+                        <p class="stat-label">हाल की गतिविधि</p>
                         <h3 class="stat-value">{{ records|selectattr('action', 'equalto', 'return')|list|length }}</h3>
                     </div>
                     <div class="stat-card">
-                        <p class="stat-label">Borrowed Books</p>
+                        <p class="stat-label">उधार ली गई किताबें</p>
                         <h3 class="stat-value">{{ records|selectattr('action', 'equalto', 'borrow')|list|length }}</h3>
                     </div>
                 </div>
