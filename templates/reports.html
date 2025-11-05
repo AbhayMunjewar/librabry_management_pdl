@@ -291,46 +291,32 @@
                             <h3 class="card-title">Top Defaulters</h3>
                         </div>
                         <div class="card-content">
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">1</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">John Doe</div>
-                                    <div class="defaulter-books">3 overdue books</div>
+                            {% if recent_history %}
+                                {% set defaulters = {} %}
+                                {% for record in recent_history %}
+                                    {% if record.member and record.action == 'borrow' %}
+                                        {% set member_name = record.member.name %}
+                                        {% if member_name not in defaulters %}
+                                            {% set _ = defaulters.update({member_name: 1}) %}
+                                        {% else %}
+                                            {% set _ = defaulters.update({member_name: defaulters[member_name] + 1}) %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+
+                                {% for i, (member_name, count) in enumerate(defaulters.items()[:5]) %}
+                                <div class="defaulter-item">
+                                    <div class="defaulter-rank">{{ i + 1 }}</div>
+                                    <div class="defaulter-info">
+                                        <div class="defaulter-name">{{ member_name }}</div>
+                                        <div class="defaulter-books">{{ count }} borrowed book{{ 's' if count > 1 else '' }}</div>
+                                    </div>
+                                    <div class="defaulter-amount">${{ count * 15 }}</div>
                                 </div>
-                                <div class="defaulter-amount">$45</div>
-                            </div>
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">2</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">Mike Johnson</div>
-                                    <div class="defaulter-books">2 overdue books</div>
-                                </div>
-                                <div class="defaulter-amount">$38</div>
-                            </div>
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">3</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">David Brown</div>
-                                    <div class="defaulter-books">2 overdue books</div>
-                                </div>
-                                <div class="defaulter-amount">$32</div>
-                            </div>
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">4</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">Emily Davis</div>
-                                    <div class="defaulter-books">4 overdue books</div>
-                                </div>
-                                <div class="defaulter-amount">$28</div>
-                            </div>
-                            <div class="defaulter-item">
-                                <div class="defaulter-rank">5</div>
-                                <div class="defaulter-info">
-                                    <div class="defaulter-name">Chris Wilson</div>
-                                    <div class="defaulter-books">1 overdue book</div>
-                                </div>
-                                <div class="defaulter-amount">$25</div>
-                            </div>
+                                {% endfor %}
+                            {% else %}
+                                <p style="text-align: center; color: #717182;">No recent activity found</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
