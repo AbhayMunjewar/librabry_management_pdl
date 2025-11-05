@@ -285,15 +285,15 @@ def export_reports_pdf():
         story.append(Spacer(1, 12))
 
         stats_data = [
-            ['Metric', 'Value'],
-            ['Total Books', str(total_books)],
-            ['Available Books', str(available_books)],
-            ['Borrowed Books', str(borrowed_books)],
-            ['Total Members', str(total_members)],
-            ['Total Fines', f'${total_fines:.2f}'],
-            ['Paid Fines', f'${paid_fines:.2f}'],
-            ['Unpaid Fines', f'${unpaid_fines:.2f}'],
-            ['Collection Rate', f'{collection_rate:.1f}%']
+            ['मेट्रिक', 'मूल्य'],
+            ['कुल पुस्तकें', str(total_books)],
+            ['उपलब्ध पुस्तकें', str(available_books)],
+            ['उधार ली गई पुस्तकें', str(borrowed_books)],
+            ['कुल सदस्य', str(total_members)],
+            ['कुल जुर्माना', f'₹{total_fines:.2f}'],
+            ['भुगतान किया गया जुर्माना', f'₹{paid_fines:.2f}'],
+            ['अभुगतानी जुर्माना', f'₹{unpaid_fines:.2f}'],
+            ['संग्रह दर', f'{collection_rate:.1f}%']
         ]
 
         stats_table = Table(stats_data, colWidths=[2*inch, 1.5*inch])
