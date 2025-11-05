@@ -317,9 +317,9 @@ def export_reports_pdf():
             story.append(Paragraph("शीर्ष चूककर्ता (अभुगतानी जुर्माना)", styles['Heading2']))
             story.append(Spacer(1, 12))
 
-            defaulter_data = [['Member Name', 'Total Unpaid Fines']]
+            defaulter_data = [['सदस्य का नाम', 'कुल अभुगतानी जुर्माना']]
             for defaulter in defaulters:
-                defaulter_data.append([defaulter.name, f'${defaulter.total_fines:.2f}'])
+                defaulter_data.append([defaulter.name, f'₹{defaulter.total_fines:.2f}'])
 
             defaulter_table = Table(defaulter_data, colWidths=[2.5*inch, 1.5*inch])
             defaulter_table.setStyle(TableStyle([
