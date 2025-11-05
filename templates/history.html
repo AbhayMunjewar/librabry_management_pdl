@@ -155,15 +155,32 @@
                             <thead>
                                 <tr>
                                     <th>Transaction ID</th>
-                                    <th>Date</th>
+                                    <th>Date & Time</th>
                                     <th>Member</th>
                                     <th>Book</th>
-                                    <th>Amount</th>
-                                    <th>Status</th>
-                                    <th>Payment Method</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
-                            <tbody id="transactionsTableBody"></tbody>
+                            <tbody>
+                                {% for record in records %}
+                                <tr>
+                                    <td>{{ record.id }}</td>
+                                    <td>{{ record.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                                    <td>
+                                        <div>
+                                            <p>{{ record.member.name if record.member else 'Unknown' }}</p>
+                                            <p style="font-size: 12px; color: #717182;">ID: {{ record.member_id }}</p>
+                                        </div>
+                                    </td>
+                                    <td>{{ record.book.title if record.book else 'Unknown' }}</td>
+                                    <td>
+                                        <span class="badge {{ 'badge-paid' if record.action == 'return' else 'badge-pending' }}">
+                                            {{ record.action.title() }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
                         </table>
                     </div>
                 </div>
