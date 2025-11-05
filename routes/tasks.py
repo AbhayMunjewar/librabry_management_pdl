@@ -79,8 +79,37 @@ def history_page():
 @login_required
 def reports_page():
     """Renders the reports page (endpoint: tasks.reports_page)."""
-    # Placeholder report logic
-    return render_template("reports.html") 
+    try:
+        # Calculate real metrics for reports
+        total_books = Book.query.count()
+        total_members = Member.query.count()
+        available_books = Book.query.filter_by(available=True).count()
+        borrowed_books = total_books - available_books
+
+        # Calculate fines statistics
+        total_fines = db.session.query(func.sum(Fine.amount)).scalar() or 0
+        paid_fines = db.session.query(func.sum(Fine.amount)).filter(Fine.paid == True).scalar() or 0
+        unpaid_fines = total_fines - paid_fines
+
+        # Get recent history
+        recent_history = History.query.order_by(History.timestamp.desc()).limit(10).all()
+
+        # Calculate collection rate
+        collection_rate = (paid_fines / total_fines * 100) if total_fines > 0 else 0
+
+        return render_template("reports.html",
+                             total_books=total_books,
+                             total_members=total_members,
+                             available_books=available_books,
+                             borrowed_books=borrowed_books,
+                             total_fines=f'{total_fines:.2f}',
+                             paid_fines=f'{paid_fines:.2f}',
+                             unpaid_fines=f'{unpaid_fines:.2f}',
+                             collection_rate=f'{collection_rate:.1f}',
+                             recent_history=recent_history)
+    except Exception as e:
+        print(f"Database error during reports load: {e}")
+        return render_template("reports.html") 
 
 @task_bp.route("/settings", methods=["GET", "POST"])
 @login_required
