@@ -131,14 +131,14 @@
                             <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>
                             </svg>
-                            <input type="text" id="searchInput" placeholder="Search transactions..." oninput="filterTransactions()">
+                            <input type="text" id="searchInput" placeholder="लेनदेन खोजें..." oninput="filterTransactions()">
                         </div>
                         <div class="filter-group">
                             <select id="statusFilter" onchange="filterTransactions()">
-                                <option value="all">All Status</option>
-                                <option value="paid">Paid</option>
-                                <option value="pending">Pending</option>
-                                <option value="refunded">Refunded</option>
+                                <option value="all">सभी स्थिति</option>
+                                <option value="paid">भुगतान किया गया</option>
+                                <option value="pending">अपूर्ण</option>
+                                <option value="refunded">वापस किया गया</option>
                             </select>
                             <button class="btn" onclick="exportHistoryPDF()" id="exportBtn">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
