@@ -311,7 +311,7 @@
                                         <div class="defaulter-name">{{ member_name }}</div>
                                         <div class="defaulter-books">{{ count }} borrowed book{{ 's' if count > 1 else '' }}</div>
                                     </div>
-                                    <div class="defaulter-amount">${{ count * 15 }}</div>
+                                    <div class="defaulter-amount">₹{{ count * 15 }}</div>
                                 </div>
                                 {% endfor %}
                             {% else %}
